@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دردشة بسيطة</title>
+    <title>دردشة سريعة</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -53,17 +55,36 @@
 <body>
 
     <div class="chat-container">
-        <h2>💬 دردشة سريعة</h2>
+        <h2>💬 دردشة عبر الإنترنت</h2>
         <div class="chat-box" id="chat-box"></div>
         <input type="text" id="message" placeholder="اكتب رسالتك هنا...">
         <button onclick="sendMessage()">إرسال</button>
     </div>
 
     <script>
+        // إعداد Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCf3pY9yxDdVFB_yHZs7-jaHuKCV42pR2A",
+            authDomain: "mainchat-21f83.firebaseapp.com",
+            databaseURL: "https://mainchat-21f83-default-rtdb.firebaseio.com",
+            projectId: "mainchat-21f83",
+            storageBucket: "mainchat-21f83.appspot.com",
+            messagingSenderId: "347359984672",
+            appId: "1:347359984672:web:b2119659434947bd1c1045"
+        };
+
+        // تهيئة Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         function loadMessages() {
-            let chatBox = document.getElementById("chat-box");
-            chatBox.innerHTML = localStorage.getItem("chat") || "";
-            chatBox.scrollTop = chatBox.scrollHeight;
+            const chatBox = document.getElementById("chat-box");
+            database.ref("messages").on("child_added", function(snapshot) {
+                let msg = snapshot.val().text; // 🔥 قراءة البيانات ككائن
+                let newMessage = `<p>🗣️ ${msg}</p>`;
+                chatBox.innerHTML += newMessage;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
         }
 
         function sendMessage() {
@@ -71,16 +92,13 @@
             let message = messageInput.value.trim();
             if (message === "") return;
 
-            let chatBox = document.getElementById("chat-box");
-            let newMessage = `<p>🗣️ ${message}</p>`;
-            
-            chatBox.innerHTML += newMessage;
-            localStorage.setItem("chat", chatBox.innerHTML);
+            // 🔥 إرسال البيانات ككائن {text: "الرسالة"}
+            database.ref("messages").push({ text: message });
 
-            messageInput.value = "";
-            chatBox.scrollTop = chatBox.scrollHeight;
+            messageInput.value = ""; // مسح الحقل بعد الإرسال
         }
 
+        // تحميل الرسائل عند فتح الصفحة
         window.onload = loadMessages;
     </script>
 
