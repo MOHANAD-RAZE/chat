@@ -83,7 +83,7 @@
 
         function loadMessages() {
             const chatBox = document.getElementById("chat-box");
-            database.ref("messages").on("child_added", function(snapshot) {
+            database.ref("sgpumessages").on("child_added", function(snapshot) {
                 let msg = snapshot.val();
                 let newMessage = `<p>🗣️ ${msg.text}</p>`;
                 chatBox.innerHTML += newMessage;
@@ -97,7 +97,7 @@
             if (message === "") return;
 
             // إرسال البيانات إلى Firebase مع التحقق من الإرسال
-            database.ref("messages").push({ text: message })
+            database.ref("sgpumessages").push({ text: message })
                 .then(() => {
                     console.log("تم إرسال الرسالة بنجاح ✅");
                 })
@@ -114,3 +114,4 @@
 
 </body>
 </html>
+
